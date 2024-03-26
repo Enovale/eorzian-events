@@ -318,7 +318,6 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     char *location = event_location->value->cstring;
     char *locationcpy = (char*)malloc(strlen(location)+1);
     strcpy(locationcpy, location);
-    APP_LOG(APP_LOG_LEVEL_INFO, "Insane");
     Tuple *event_description = dict_find(iter, MESSAGE_KEY_EventDescription);
     char *description = event_description->value->cstring;
     char *descriptioncpy = (char*)malloc(strlen(description)+1);
