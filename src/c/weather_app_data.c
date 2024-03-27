@@ -29,7 +29,7 @@ void weather_app_view_model_set_icon(WeatherAppMainWindowViewModel *model, GDraw
   weather_app_main_window_view_model_announce_changed(model);
 }
 
-WeatherDataViewNumbers weather_app_data_point_view_model_numbers(WeatherAppDataPoint *data_point) {
+WeatherDataViewNumbers weather_app_data_point_view_model_numbers(EventDataPoint *data_point) {
   return (WeatherDataViewNumbers){
       .temperature = data_point->current,
       .high = data_point->high,
@@ -37,10 +37,10 @@ WeatherDataViewNumbers weather_app_data_point_view_model_numbers(WeatherAppDataP
   };
 }
 
-int weather_app_index_of_data_point(WeatherAppDataPoint *dp);
+int weather_app_index_of_data_point(EventDataPoint *dp);
 
-void weather_app_view_model_fill_strings_and_pagination(WeatherAppMainWindowViewModel *view_model, WeatherAppDataPoint *data_point) {
-  view_model->city = data_point->city;
+void weather_app_view_model_fill_strings_and_pagination(WeatherAppMainWindowViewModel *view_model, EventDataPoint *data_point) {
+  view_model->city = data_point->name;
   view_model->description = data_point->description;
 
   view_model->pagination.idx = (int16_t)(1 + weather_app_index_of_data_point(data_point));
@@ -50,7 +50,7 @@ void weather_app_view_model_fill_strings_and_pagination(WeatherAppMainWindowView
 }
 
 
-GDrawCommandImage *weather_app_data_point_create_icon(WeatherAppDataPoint *data_point) {
+GDrawCommandImage *weather_app_data_point_create_icon(EventDataPoint *data_point) {
   return weather_app_resources_get_icon(data_point->icon);
 }
 
@@ -66,11 +66,11 @@ void weather_app_view_model_fill_colors(WeatherAppMainWindowViewModel *model, GC
   weather_app_main_window_view_model_announce_changed(model);
 }
 
-GColor weather_app_data_point_color(WeatherAppDataPoint *data_point) {
+GColor weather_app_data_point_color(EventDataPoint *data_point) {
   return data_point->current > 90 ? GColorOrange : GColorPictonBlue;
 }
 
-void weather_app_view_model_fill_all(WeatherAppMainWindowViewModel *model, WeatherAppDataPoint *data_point) {
+void weather_app_view_model_fill_all(WeatherAppMainWindowViewModel *model, EventDataPoint *data_point) {
   WeatherAppMainWindowViewModelFunc annouce_changed = model->announce_changed;
   memset(model, 0, sizeof(*model));
   model->announce_changed = annouce_changed;
@@ -86,9 +86,9 @@ void weather_app_view_model_deinit(WeatherAppMainWindowViewModel *model) {
   weather_app_view_model_set_icon(model, NULL);
 }
 
-static WeatherAppDataPoint s_data_points[] = {
+static EventDataPoint s_data_points[] = {
     {
-        .city = "PALO ALTO",
+        .name = "PALO ALTO",
         .description = "Light Rain.",
         .icon = WEATHER_APP_ICON_LIGHT_RAIN,
         .current = 68,
@@ -96,7 +96,7 @@ static WeatherAppDataPoint s_data_points[] = {
         .low = 60,
     },
     {
-        .city = "LOS ANGELES",
+        .name = "LOS ANGELES",
         .description = "Clear throughout the day.",
         .icon = WEATHER_APP_ICON_SUNNY_DAY,
         .current = 100,
@@ -104,7 +104,7 @@ static WeatherAppDataPoint s_data_points[] = {
         .low = 80,
     },
     {
-        .city = "SAN FRANCISCO",
+        .name = "SAN FRANCISCO",
         .description = "Rain and Fog.",
         .icon = WEATHER_APP_ICON_HEAVY_SNOW,
         .current = 60,
@@ -112,7 +112,7 @@ static WeatherAppDataPoint s_data_points[] = {
         .low = 56,
     },
     {
-        .city = "SAN DIEGO",
+        .name = "SAN DIEGO",
         .description = "Surfboard :)",
         .icon = WEATHER_APP_ICON_GENERIC_WEATHER,
         .current = 110,
@@ -125,7 +125,7 @@ int weather_app_num_data_points(void) {
   return ARRAY_LENGTH(s_data_points);
 }
 
-WeatherAppDataPoint *weather_app_data_point_at(int idx) {
+EventDataPoint *weather_app_data_point_at(int idx) {
   if (idx < 0 || idx > weather_app_num_data_points() - 1) {
     return NULL;
   }
@@ -133,7 +133,7 @@ WeatherAppDataPoint *weather_app_data_point_at(int idx) {
   return &s_data_points[idx];
 }
 
-int weather_app_index_of_data_point(WeatherAppDataPoint *dp) {
+int weather_app_index_of_data_point(EventDataPoint *dp) {
   for (int i = 0; i < weather_app_num_data_points(); i++) {
     if (dp == weather_app_data_point_at(i)) {
       return i;
@@ -142,7 +142,7 @@ int weather_app_index_of_data_point(WeatherAppDataPoint *dp) {
   return -1;
 }
 
-WeatherAppDataPoint *weather_app_data_point_delta(WeatherAppDataPoint *dp, int delta) {
+EventDataPoint *weather_app_data_point_delta(EventDataPoint *dp, int delta) {
   int idx = weather_app_index_of_data_point(dp);
   if (idx < 0) {
     return NULL;

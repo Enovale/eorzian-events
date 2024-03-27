@@ -1,6 +1,13 @@
 var Nodes = require('nodes');
 var Sights = require('sightseeing');
 
+var monitoredEvents = [
+  "Silkworm Cocoon",
+  "Silver Sovereign",
+  "Darksteel Ore",
+  "Barracuda Piers"
+]
+
 var nodeData;
 var sightData;
 Nodes.fetchData(
@@ -29,13 +36,32 @@ function typeToEnum(type) {
     return 0;
   } else if (type == "botany") {
     return 1;
-  } else if (type == "sightseeing") {
+  } else if (type == "fishing") {
     return 2;
+  } else if (type == "sightseeing") {
+    return 3;
   }
 }
 
 function sendOverData() {
-  console.log("Sending data now.")
+  console.log("Sending data now.");
+
+  var monitoredData = [];
+  for(var j = 0; j < nodeData.length; j++) {
+    for(var l = 0; l < monitoredEvents.length; l++) {
+      if (nodeData[j].name == monitoredEvents[l]) {
+        monitoredData[l] = nodeData[j];
+      }
+    }
+  }
+
+  for(var j = 0; j < sightData.length; j++) {
+    for(var l = 0; l < monitoredEvents.length; l++) {
+      if (sightData[j].name == monitoredEvents[l]) {
+        monitoredData[l] = sightData[j];
+      }
+    }
+  }
 
   var i = 0;
   success = function() {
@@ -43,12 +69,12 @@ function sendOverData() {
     // TODO
     //if (i < nodeData.length) {
     if (i < 4) {
-      sendOverEvent(nodeData[i], i, success);
+      sendOverEvent(monitoredData[i], i, success);
     } else {
       Pebble.sendAppMessage({"DoneWithData": 1});
     }
   }
-  sendOverEvent(nodeData[i], i, success);
+  sendOverEvent(monitoredData[i], i, success);
 }
 
 function sendOverEvent(event, i, success, failure) {

@@ -43,13 +43,13 @@ typedef struct {
 void weather_app_main_window_view_model_announce_changed(WeatherAppMainWindowViewModel *model);
 
 typedef struct {
-  char *city;
+  char *name;
   char *description;
   int icon;
   int16_t current;
   int16_t high;
   int16_t low;
-} WeatherAppDataPoint;
+} EventDataPoint;
 
 typedef struct {
   int16_t temperature;
@@ -63,23 +63,23 @@ void weather_app_view_model_set_highlow(WeatherAppMainWindowViewModel *model, in
 void weather_app_view_model_set_temperature(WeatherAppMainWindowViewModel *model, int16_t value);
 void weather_app_view_model_set_icon(WeatherAppMainWindowViewModel *model, GDrawCommandImage *image);
 
-WeatherDataViewNumbers weather_app_data_point_view_model_numbers(WeatherAppDataPoint *data_point);
+WeatherDataViewNumbers weather_app_data_point_view_model_numbers(EventDataPoint *data_point);
 
-GDrawCommandImage *weather_app_data_point_create_icon(WeatherAppDataPoint *data_point);
+GDrawCommandImage *weather_app_data_point_create_icon(EventDataPoint *data_point);
 
-void weather_app_view_model_fill_strings_and_pagination(WeatherAppMainWindowViewModel *view_model, WeatherAppDataPoint *data_point);
+void weather_app_view_model_fill_strings_and_pagination(WeatherAppMainWindowViewModel *view_model, EventDataPoint *data_point);
 
 void weather_view_model_fill_numbers(WeatherAppMainWindowViewModel *model, WeatherDataViewNumbers numbers);
 
-void weather_app_view_model_fill_all(WeatherAppMainWindowViewModel *model, WeatherAppDataPoint *data_point);
+void weather_app_view_model_fill_all(WeatherAppMainWindowViewModel *model, EventDataPoint *data_point);
 
 void weather_app_view_model_fill_colors(WeatherAppMainWindowViewModel *model, GColor color);
 
 void weather_app_view_model_deinit(WeatherAppMainWindowViewModel *model);
 
-GColor weather_app_data_point_color(WeatherAppDataPoint *data_point);
+GColor weather_app_data_point_color(EventDataPoint *data_point);
 
 int weather_app_num_data_points(void);
 
-WeatherAppDataPoint *weather_app_data_point_at(int idx);
-WeatherAppDataPoint *weather_app_data_point_delta(WeatherAppDataPoint *dp, int delta);
+EventDataPoint *weather_app_data_point_at(int idx);
+EventDataPoint *weather_app_data_point_delta(EventDataPoint *dp, int delta);

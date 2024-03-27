@@ -92,7 +92,7 @@ void init_statusbar_text_layer(Layer *parent, TextLayer **layer) {
 }
 
 //! sets the new data model
-static void set_data_point(WeatherAppData *data, WeatherAppDataPoint *dp) {
+static void set_data_point(WeatherAppData *data, EventDataPoint *dp) {
   data->data_point = dp;
   weather_app_view_model_fill_all(&data->view_model, dp);
 }
@@ -132,7 +132,7 @@ static void main_window_load(Window *window) {
   init_text_layer(window_layer, &data->highlow_layer, 91, 19, narrow, FONT_KEY_GOTHIC_14);
   const int16_t description_top = 108;
   const int16_t description_height = bounds.size.h - description_top;
-  init_text_layer(window_layer, &data->description_layer, description_top, description_height, 0, FONT_KEY_GOTHIC_24_BOLD);
+  init_text_layer(window_layer, &data->description_layer, description_top, description_height, 0, FONT_KEY_GOTHIC_18_BOLD);
 
   GRect icon_rect = GRect(0, 0, ICON_DIMENSIONS, ICON_DIMENSIONS);
   GRect alignment_rect = GRect(0, temperature_top + 10, bounds.size.w - MARGIN, 10);
@@ -168,7 +168,7 @@ static void main_window_unload(Window *window) {
 
 static void after_scroll_swap_text(Animation *animation, bool finished, void *context) {
   WeatherAppData *data = window_get_user_data(s_main_window);
-  WeatherAppDataPoint *data_point = context;
+  EventDataPoint *data_point = context;
 
   weather_app_view_model_fill_strings_and_pagination(&data->view_model, data_point);
 }
@@ -220,7 +220,7 @@ static Animation *create_inbound_anim(WeatherAppData *data, ScrollDirection dire
   return animation_spawn_create(in_city, in_description, in_highlow, in_ruler, NULL);
 }
 
-static Animation *animation_for_scroll(WeatherAppData *data, ScrollDirection direction, WeatherAppDataPoint *next_data_point) {
+static Animation *animation_for_scroll(WeatherAppData *data, ScrollDirection direction, EventDataPoint *next_data_point) {
   WeatherAppMainWindowViewModel *view_model = &data->view_model;
 
   // sliding texts
@@ -251,7 +251,7 @@ static Animation *animation_for_bounce(WeatherAppData *data, ScrollDirection dir
 
 static void ask_for_scroll(WeatherAppData *data, ScrollDirection direction) {
   int delta = direction == ScrollDirectionUp ? -1 : +1;
-  WeatherAppDataPoint *next_data_point = weather_app_data_point_delta(data->data_point, delta);
+  EventDataPoint *next_data_point = weather_app_data_point_delta(data->data_point, delta);
 
   Animation *scroll_animation;
 
@@ -289,7 +289,7 @@ static void show_weather_window() {
   WeatherAppData *data = malloc(sizeof(WeatherAppData));  
   memset(data, 0, sizeof(WeatherAppData));
 
-  WeatherAppDataPoint *dp = weather_app_data_point_at(0);
+  EventDataPoint *dp = weather_app_data_point_at(0);
   set_data_point(data, dp);
 
   s_main_window = window_create();
@@ -328,8 +328,8 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     if (index > 3) {
       return;
     }
-    WeatherAppDataPoint *dp = weather_app_data_point_at(index);
-    dp->city = namecpy;
+    EventDataPoint *dp = weather_app_data_point_at(index);
+    dp->name = namecpy;
     dp->description = descriptioncpy;
     dp->icon = type;
   } else if (data_finished) {

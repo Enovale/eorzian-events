@@ -1,7 +1,8 @@
 {
   "author": "Pebble Technology",
   "dependencies": {
-    "@smallstoneapps/loading-screen": "^2.2.1"
+    "@smallstoneapps/loading-screen": "^2.2.1",
+    "pebble-api": "^0.2.2"
   },
   "keywords": [
     "pebble-app"
@@ -68,6 +69,11 @@
         {
           "file": "botany.pdc",
           "name": "ICON_BOTANY",
+          "type": "raw"
+        },
+        {
+          "file": "fishing.pdc",
+          "name": "ICON_FISHING",
           "type": "raw"
         },
         {

@@ -8,7 +8,7 @@
 #include "weather_app_data.h"
 
 typedef struct {
-  WeatherAppDataPoint *data_point;
+  EventDataPoint *data_point;
   WeatherAppMainWindowViewModel view_model;
   Animation *previous_animation;
   TextLayer *fake_statusbar;
