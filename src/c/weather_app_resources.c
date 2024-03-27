@@ -13,6 +13,9 @@ GDrawCommandImage *weather_app_resources_get_icon(WeatherAppIcon icon) {
     case EVENT_TYPE_BOTANY:
       return gdraw_command_image_create_with_resource(RESOURCE_ID_ICON_BOTANY);
 
+    case EVENT_TYPE_FISHING:
+      return gdraw_command_image_create_with_resource(RESOURCE_ID_ICON_FISHING);
+
     case EVENT_TYPE_SIGHTSEEING:
       return gdraw_command_image_create_with_resource(RESOURCE_ID_ICON_SIGHTSEEING);
 

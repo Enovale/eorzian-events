@@ -55,7 +55,7 @@ static const PropertyAnimationImplementation s_animated_numbers_implementation =
 };
 
 
-Animation *weather_app_create_view_model_animation_numbers(WeatherAppMainWindowViewModel *view_model, WeatherAppDataPoint *next_data_point) {
+Animation *weather_app_create_view_model_animation_numbers(WeatherAppMainWindowViewModel *view_model, EventDataPoint *next_data_point) {
   PropertyAnimation *number_animation = property_animation_create(&s_animated_numbers_implementation, view_model, NULL, NULL);
   WeatherDataViewNumbers numbers = get_animated_numbers(view_model);
   property_animation_from(number_animation, &numbers, sizeof(numbers), true);
@@ -88,7 +88,7 @@ static const PropertyAnimationImplementation s_bg_color_normalized_implementatio
 static void bg_colors_animation_started(Animation *animation, void *context) {
   WeatherAppMainWindowViewModel *view_model = view_model_from_animation(animation);
 
-  WeatherAppDataPoint *dp = context;
+  EventDataPoint *dp = context;
   GColor color = weather_app_data_point_color(dp);
 
   // before, .top and .bottom are set to the current color, see weather_app_view_model_fill_colors()
@@ -104,13 +104,13 @@ static void bg_colors_animation_started(Animation *animation, void *context) {
 static void bg_colors_animation_stopped(Animation *animation, bool finished, void *context) {
   WeatherAppMainWindowViewModel *view_model = view_model_from_animation(animation);
 
-  WeatherAppDataPoint *dp = context;
+  EventDataPoint *dp = context;
   GColor color = weather_app_data_point_color(dp);
 
   weather_app_view_model_fill_colors(view_model, color);
 }
 
-Animation *weather_app_create_view_model_animation_bgcolor(WeatherAppMainWindowViewModel *view_model, WeatherAppDataPoint *next_data_point) {
+Animation *weather_app_create_view_model_animation_bgcolor(WeatherAppMainWindowViewModel *view_model, EventDataPoint *next_data_point) {
   Animation *bg_animation = (Animation *) property_animation_create(&s_bg_color_normalized_implementation, view_model, NULL, NULL);
   animation_set_handlers(bg_animation, (AnimationHandlers){
     .started = bg_colors_animation_started,
@@ -140,7 +140,7 @@ static void replace_icon_stop_handler(Animation *animation, bool finished, void 
   weather_app_view_model_set_icon(view_model, icon);
 }
 
-Animation *weather_app_create_view_model_animation_icon(WeatherAppMainWindowViewModel *view_model, WeatherAppDataPoint *next_data_point, uint32_t duration) {
+Animation *weather_app_create_view_model_animation_icon(WeatherAppMainWindowViewModel *view_model, EventDataPoint *next_data_point, uint32_t duration) {
   Animation *icon_animation_to_square = (Animation *) property_animation_create(&s_icon_scquare_normalized_implementation, view_model, NULL, NULL);
   animation_set_duration(icon_animation_to_square, duration / 2);
   animation_set_curve(icon_animation_to_square, AnimationCurveEaseIn);
