@@ -201,7 +201,7 @@ var ajax;
 
 /* Try to load the ajax library if available and silently fail if it is not found. */
 try {
-  ajax = require('ajax');
+  ajax = require('./ajax');
 } catch (err) {}
 
 /* Wrap the success and failure callback of the ajax library */
