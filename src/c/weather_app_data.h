@@ -6,22 +6,22 @@
 
 #include <pebble.h>
 
-struct WeatherAppMainWindowViewModel;
+struct EventsCardsMainWindowViewModel;
 
-typedef void (*WeatherAppMainWindowViewModelFunc)(struct WeatherAppMainWindowViewModel* model);
+typedef void (*EventsCardsMainWindowViewModelFunc)(struct EventsCardsMainWindowViewModel* model);
 
 typedef struct {
-  WeatherAppMainWindowViewModelFunc announce_changed;
+  EventsCardsMainWindowViewModelFunc announce_changed;
   struct {
     GColor top;
     GColor bottom;
     int32_t to_bottom_normalized;
   } bg_color;
-  char *city;
+  char *name;
   struct {
-    int16_t value;
+    uint8_t value;
     char text[8];
-  } temperature;
+  } active;
   struct {
     GDrawCommandImage *draw_command;
     int32_t to_square_normalized;
@@ -32,50 +32,54 @@ typedef struct {
     char text[8];
   } pagination;
   struct {
-    int16_t high;
-    int16_t low;
+    uint8_t start_hours;
+    uint8_t start_minutes;
+    uint8_t end_hours;
+    uint8_t end_minutes;
     char text[20];
-  } highlow;
+  } startend;
   char *description;
-} WeatherAppMainWindowViewModel;
+} EventsCardsMainWindowViewModel;
 
 //! calls model's .announce_changed or does nothing if NULL
-void weather_app_main_window_view_model_announce_changed(WeatherAppMainWindowViewModel *model);
+void weather_app_main_window_view_model_announce_changed(EventsCardsMainWindowViewModel *model);
 
 typedef struct {
   char *name;
   char *description;
   int icon;
-  int16_t current;
-  int16_t high;
-  int16_t low;
+  int32_t current;
+  int32_t end_time;
+  int32_t start_time;
 } EventDataPoint;
 
 typedef struct {
-  int16_t temperature;
-  int16_t low;
-  int16_t high;
-} WeatherDataViewNumbers;
+  uint8_t active;
+  uint8_t start_hours;
+  uint8_t start_minutes;
+  uint8_t end_hours;
+  uint8_t end_minutes;
+} EventsDataViewNumbers;
 
 
-void weather_app_view_model_set_highlow(WeatherAppMainWindowViewModel *model, int16_t high, int16_t low);
+void weather_app_view_model_set_highlow(EventsCardsMainWindowViewModel *model, uint8_t end_hours, uint8_t end_minutes, uint8_t start_hours, uint8_t start_minutes);
 
-void weather_app_view_model_set_temperature(WeatherAppMainWindowViewModel *model, int16_t value);
-void weather_app_view_model_set_icon(WeatherAppMainWindowViewModel *model, GDrawCommandImage *image);
+void weather_app_view_model_set_temperature(EventsCardsMainWindowViewModel *model, int32_t value);
+void weather_app_view_model_set_icon(EventsCardsMainWindowViewModel *model, GDrawCommandImage *image);
 
-WeatherDataViewNumbers weather_app_data_point_view_model_numbers(EventDataPoint *data_point);
+EventsDataViewNumbers weather_app_data_point_view_model_numbers(EventDataPoint *data_point);
 
 GDrawCommandImage *weather_app_data_point_create_icon(EventDataPoint *data_point);
 
-void weather_app_view_model_fill_strings_and_pagination(WeatherAppMainWindowViewModel *view_model, EventDataPoint *data_point);
+void weather_app_view_model_fill_strings_and_pagination(EventsCardsMainWindowViewModel *view_model, EventDataPoint *data_point);
 
-void weather_view_model_fill_numbers(WeatherAppMainWindowViewModel *model, WeatherDataViewNumbers numbers);
+void weather_view_model_fill_numbers(EventsCardsMainWindowViewModel *model, EventsDataViewNumbers numbers);
 
-void weather_app_view_model_fill_all(WeatherAppMainWindowViewModel *model, EventDataPoint *data_point);
+void weather_app_view_model_fill_all(EventsCardsMainWindowViewModel *model, EventDataPoint *data_point);
 
-void weather_app_view_model_fill_colors(WeatherAppMainWindowViewModel *model, GColor color);
+void weather_app_view_model_fill_colors(EventsCardsMainWindowViewModel *model, GColor color);
 
-void weather_app_view_model_deinit(WeatherAppMainWindowViewModel *model);
+void weather_app_view_model_deinit(EventsCardsMainWindowViewModel *model);
 
 GColor weather_app_data_point_color(EventDataPoint *data_point);
 

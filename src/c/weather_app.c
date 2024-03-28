@@ -24,8 +24,8 @@ const int16_t outbox_size = 256;
 // update procs for our three custom layers
 
 static void bg_update_proc(Layer *layer, GContext *ctx) {
-  WeatherAppData *data = window_get_user_data(s_main_window);
-  WeatherAppMainWindowViewModel *model = &data->view_model;
+  EventsAppData *data = window_get_user_data(s_main_window);
+  EventsCardsMainWindowViewModel *model = &data->view_model;
   const GRect bounds = layer_get_bounds(layer);
 
   int16_t y = (model->bg_color.to_bottom_normalized * bounds.size.h) / ANIMATION_NORMALIZED_MAX;
@@ -51,8 +51,8 @@ static void horizontal_ruler_update_proc(Layer *layer, GContext *ctx) {
 }
 
 static void icon_layer_update_proc(Layer *layer, GContext *ctx) {
-  WeatherAppData *data = window_get_user_data(s_main_window);
-  WeatherAppMainWindowViewModel *model = &data->view_model;
+  EventsAppData *data = window_get_user_data(s_main_window);
+  EventsCardsMainWindowViewModel *model = &data->view_model;
   GDrawCommandImage *original_icon = model->icon.draw_command;
   if (!original_icon) {
     return;
@@ -92,19 +92,19 @@ void init_statusbar_text_layer(Layer *parent, TextLayer **layer) {
 }
 
 //! sets the new data model
-static void set_data_point(WeatherAppData *data, EventDataPoint *dp) {
+static void set_data_point(EventsAppData *data, EventDataPoint *dp) {
   data->data_point = dp;
   weather_app_view_model_fill_all(&data->view_model, dp);
 }
 
-static void view_model_changed(struct WeatherAppMainWindowViewModel *arg) {
-  WeatherAppMainWindowViewModel *model = (WeatherAppMainWindowViewModel *)arg;
+static void view_model_changed(struct EventsCardsMainWindowViewModel *arg) {
+  EventsCardsMainWindowViewModel *model = (EventsCardsMainWindowViewModel *)arg;
 
-  WeatherAppData *data = window_get_user_data(s_main_window);
+  EventsAppData *data = window_get_user_data(s_main_window);
 
-  text_layer_set_text(data->city_layer, model->city);
-  text_layer_set_text(data->temperature_layer, model->temperature.text);
-  text_layer_set_text(data->highlow_layer, model->highlow.text);
+  text_layer_set_text(data->name_layer, model->name);
+  text_layer_set_text(data->event_active_layer, model->active.text);
+  text_layer_set_text(data->startend_layer, model->startend.text);
   text_layer_set_text(data->description_layer, model->description);
   text_layer_set_text(data->pagination_layer, model->pagination.text);
 
@@ -113,7 +113,7 @@ static void view_model_changed(struct WeatherAppMainWindowViewModel *arg) {
 }
 
 static void main_window_load(Window *window) {
-  WeatherAppData *data = window_get_user_data(window);
+  EventsAppData *data = window_get_user_data(window);
   data->view_model.announce_changed = view_model_changed;
 
   Layer *window_layer = window_get_root_layer(window);
@@ -126,10 +126,10 @@ static void main_window_load(Window *window) {
 
   const int16_t narrow_buffer = 5; // current whitespacing would trim 3-digit temperature otherwise
   const int16_t narrow = ICON_DIMENSIONS + 2 - narrow_buffer;
-  init_text_layer(window_layer, &data->city_layer, 23, 30, 0, FONT_KEY_GOTHIC_18_BOLD);
+  init_text_layer(window_layer, &data->name_layer, 23, 30, 0, FONT_KEY_GOTHIC_18_BOLD);
   const int16_t temperature_top = 49;
-  init_text_layer(window_layer, &data->temperature_layer, temperature_top, 40, narrow, FONT_KEY_LECO_38_BOLD_NUMBERS);
-  init_text_layer(window_layer, &data->highlow_layer, 91, 19, narrow, FONT_KEY_GOTHIC_14);
+  init_text_layer(window_layer, &data->event_active_layer, temperature_top, 40, narrow, FONT_KEY_LECO_38_BOLD_NUMBERS);
+  init_text_layer(window_layer, &data->startend_layer, 91, 19, narrow, FONT_KEY_GOTHIC_14);
   const int16_t description_top = 108;
   const int16_t description_height = bounds.size.h - description_top;
   init_text_layer(window_layer, &data->description_layer, description_top, description_height, 0, FONT_KEY_GOTHIC_18_BOLD);
@@ -152,14 +152,14 @@ static void main_window_load(Window *window) {
 }
 
 static void main_window_unload(Window *window) {
-  WeatherAppData *data = window_get_user_data(window);
+  EventsAppData *data = window_get_user_data(window);
   data->view_model.announce_changed = NULL;
   weather_app_view_model_deinit(&data->view_model);
 
   layer_destroy(data->horizontal_ruler_layer);
-  text_layer_destroy(data->city_layer);
-  text_layer_destroy(data->temperature_layer);
-  text_layer_destroy(data->highlow_layer);
+  text_layer_destroy(data->name_layer);
+  text_layer_destroy(data->event_active_layer);
+  text_layer_destroy(data->startend_layer);
   text_layer_destroy(data->description_layer);
   layer_destroy(data->icon_layer);
   text_layer_destroy(data->fake_statusbar);
@@ -167,7 +167,7 @@ static void main_window_unload(Window *window) {
 }
 
 static void after_scroll_swap_text(Animation *animation, bool finished, void *context) {
-  WeatherAppData *data = window_get_user_data(s_main_window);
+  EventsAppData *data = window_get_user_data(s_main_window);
   EventDataPoint *data_point = context;
 
   weather_app_view_model_fill_strings_and_pagination(&data->view_model, data_point);
@@ -199,29 +199,29 @@ typedef enum {
   ScrollDirectionUp,
 } ScrollDirection;
 
-static Animation *create_outbound_anim(WeatherAppData *data, ScrollDirection direction) {
+static Animation *create_outbound_anim(EventsAppData *data, ScrollDirection direction) {
   const int16_t to_dy = (direction == ScrollDirectionDown) ? -SCROLL_DIST_OUT : SCROLL_DIST_OUT;
 
-  Animation *out_city = create_anim_scroll_out(text_layer_get_layer(data->city_layer), SCROLL_DURATION, to_dy);
+  Animation *out_city = create_anim_scroll_out(text_layer_get_layer(data->name_layer), SCROLL_DURATION, to_dy);
   Animation *out_description = create_anim_scroll_out(text_layer_get_layer(data->description_layer), SCROLL_DURATION, to_dy);
   Animation *out_ruler = create_anim_scroll_out(data->horizontal_ruler_layer, SCROLL_DURATION, to_dy);
 
   return animation_spawn_create(out_city, out_description, out_ruler, NULL);
 }
 
-static Animation *create_inbound_anim(WeatherAppData *data, ScrollDirection direction) {
+static Animation *create_inbound_anim(EventsAppData *data, ScrollDirection direction) {
   const int16_t from_dy = (direction == ScrollDirectionDown) ? -SCROLL_DIST_IN : SCROLL_DIST_IN;
 
-  Animation *in_city = create_anim_scroll_in(text_layer_get_layer(data->city_layer), SCROLL_DURATION, from_dy);
+  Animation *in_city = create_anim_scroll_in(text_layer_get_layer(data->name_layer), SCROLL_DURATION, from_dy);
   Animation *in_description = create_anim_scroll_in(text_layer_get_layer(data->description_layer), SCROLL_DURATION, from_dy);
-  Animation *in_highlow = create_anim_scroll_in(text_layer_get_layer(data->highlow_layer), SCROLL_DURATION, from_dy);
+  Animation *in_highlow = create_anim_scroll_in(text_layer_get_layer(data->startend_layer), SCROLL_DURATION, from_dy);
   Animation *in_ruler = create_anim_scroll_in(data->horizontal_ruler_layer, SCROLL_DURATION, from_dy);
 
   return animation_spawn_create(in_city, in_description, in_highlow, in_ruler, NULL);
 }
 
-static Animation *animation_for_scroll(WeatherAppData *data, ScrollDirection direction, EventDataPoint *next_data_point) {
-  WeatherAppMainWindowViewModel *view_model = &data->view_model;
+static Animation *animation_for_scroll(EventsAppData *data, ScrollDirection direction, EventDataPoint *next_data_point) {
+  EventsCardsMainWindowViewModel *view_model = &data->view_model;
 
   // sliding texts
   Animation *out_text = create_outbound_anim(data, direction);
@@ -238,18 +238,18 @@ static Animation *animation_for_scroll(WeatherAppData *data, ScrollDirection dir
   // morphing icon
   Animation *icon_animations = weather_app_create_view_model_animation_icon(view_model, next_data_point, BACKGROUND_SCROLL_DURATION * 2);
 
-  // changing temperature text
+  // changing active text
   Animation *number_animation = weather_app_create_view_model_animation_numbers(view_model, next_data_point);
   animation_set_duration((Animation *) number_animation, SCROLL_DURATION * 2);
 
   return animation_spawn_create(animation_sequence_create(out_text, in_text, NULL), bg_animation, icon_animations, number_animation, NULL);
 }
 
-static Animation *animation_for_bounce(WeatherAppData *data, ScrollDirection direction) {
+static Animation *animation_for_bounce(EventsAppData *data, ScrollDirection direction) {
   return create_inbound_anim(data, direction);
 }
 
-static void ask_for_scroll(WeatherAppData *data, ScrollDirection direction) {
+static void ask_for_scroll(EventsAppData *data, ScrollDirection direction) {
   int delta = direction == ScrollDirectionUp ? -1 : +1;
   EventDataPoint *next_data_point = weather_app_data_point_delta(data->data_point, delta);
 
@@ -269,12 +269,12 @@ static void ask_for_scroll(WeatherAppData *data, ScrollDirection direction) {
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  WeatherAppData *data = context;
+  EventsAppData *data = context;
   ask_for_scroll(data, ScrollDirectionUp);
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  WeatherAppData *data = context;
+  EventsAppData *data = context;
   ask_for_scroll(data, ScrollDirectionDown);
 }
 
@@ -286,8 +286,8 @@ static void click_config_provider(void *context) {
 static void show_weather_window() {
   loading_screen_hide();
 
-  WeatherAppData *data = malloc(sizeof(WeatherAppData));  
-  memset(data, 0, sizeof(WeatherAppData));
+  EventsAppData *data = malloc(sizeof(EventsAppData));  
+  memset(data, 0, sizeof(EventsAppData));
 
   EventDataPoint *dp = weather_app_data_point_at(0);
   set_data_point(data, dp);
@@ -324,6 +324,11 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     strcpy(descriptioncpy, description);
     Tuple *event_type = dict_find(iter, MESSAGE_KEY_EventType);
     int8_t type = event_type->value->int8;
+    Tuple *event_time_start = dict_find(iter, MESSAGE_KEY_EventTimeStart);
+    int32_t time_start = event_time_start->value->uint32;
+    Tuple *event_time_end = dict_find(iter, MESSAGE_KEY_EventTimeEnd);
+    int32_t time_end = event_time_end->value->uint32;
+    APP_LOG(APP_LOG_LEVEL_INFO, "%d", time_end);
 
     if (index > 3) {
       return;
@@ -331,6 +336,8 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     EventDataPoint *dp = weather_app_data_point_at(index);
     dp->name = namecpy;
     dp->description = descriptioncpy;
+    dp->start_time = time_start;
+    dp->end_time = time_end;
     dp->icon = type;
   } else if (data_finished) {
     show_weather_window();

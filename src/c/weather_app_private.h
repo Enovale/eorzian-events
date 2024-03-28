@@ -9,14 +9,14 @@
 
 typedef struct {
   EventDataPoint *data_point;
-  WeatherAppMainWindowViewModel view_model;
+  EventsCardsMainWindowViewModel view_model;
   Animation *previous_animation;
   TextLayer *fake_statusbar;
   TextLayer *pagination_layer;
-  TextLayer *city_layer;
+  TextLayer *name_layer;
   Layer *horizontal_ruler_layer;
-  TextLayer *temperature_layer;
-  TextLayer *highlow_layer;
+  TextLayer *event_active_layer;
+  TextLayer *startend_layer;
   TextLayer *description_layer;
   Layer *icon_layer;
-} WeatherAppData;
+} EventsAppData;

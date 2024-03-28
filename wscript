@@ -61,6 +61,8 @@ def configure_platform(ctx, platform=None):
                    '-fms-extensions',
                    '-Wno-address',
                    '-Wno-type-limits',
+                   '-Wno-error=format=',
+                   '-Wno-format',
                    '-Wno-missing-field-initializers'])
 
     ctx.env.CFLAGS = cflags
