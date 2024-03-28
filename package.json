@@ -1,17 +1,17 @@
 {
-  "author": "Pebble Technology",
+  "author": "Enova",
   "dependencies": {
     "@smallstoneapps/loading-screen": "^2.2.1",
-    "pebble-api": "^0.2.2"
+    "pebble-timeline-js": "^2.0.1"
   },
   "keywords": [
     "pebble-app"
   ],
-  "name": "Cards Example",
+  "name": "eorzian-events",
   "pebble": {
     "capabilities": [],
-    "displayName": "Cards Example",
-    "enableMultiJS": false,
+    "displayName": "Eorzian Events",
+    "enableMultiJS": true,
     "messageKeys": {
       "DoneWithData": 1,
       "EventDescription": 5,
@@ -26,41 +26,6 @@
     "projectType": "native",
     "resources": {
       "media": [
-        {
-          "file": "Pebble_50x50_Generic_weather.pdc",
-          "name": "ICON_GENERIC_WEATHER",
-          "type": "raw"
-        },
-        {
-          "file": "Pebble_50x50_Heavy_rain.pdc",
-          "name": "ICON_HEAVY_RAIN",
-          "type": "raw"
-        },
-        {
-          "file": "Pebble_50x50_Heavy_snow.pdc",
-          "name": "ICON_HEAVY_SNOW",
-          "type": "raw"
-        },
-        {
-          "file": "Pebble_50x50_Light_rain.pdc",
-          "name": "ICON_LIGHT_RAIN",
-          "type": "raw"
-        },
-        {
-          "file": "Pebble_50x50_Light_snow.pdc",
-          "name": "ICON_LIGHT_SNOW",
-          "type": "raw"
-        },
-        {
-          "file": "Pebble_50x50_Partly_cloudy.pdc",
-          "name": "ICON_PARTLY_CLOUDY",
-          "type": "raw"
-        },
-        {
-          "file": "Pebble_50x50_Sunny_day.pdc",
-          "name": "ICON_SUNNY_DAY",
-          "type": "raw"
-        },
         {
           "file": "mining.pdc",
           "name": "ICON_MINING",
@@ -90,7 +55,7 @@
       "chalk",
       "diorite"
     ],
-    "uuid": "ae8b2bc4-7f29-41c4-b8e5-d0b3d7a999ad",
+    "uuid": "945f83cc-41c6-4388-983d-fad293a92895",
     "watchapp": {
       "hiddenApp": false,
       "onlyShownOnCommunication": false,
@@ -98,5 +63,5 @@
     }
   },
   "private": true,
-  "version": "1.0.0"
+  "version": "0.1.0"
 }

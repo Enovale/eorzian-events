@@ -99,7 +99,7 @@ static EventDataPoint s_data_points[] = {
     {
         .name = "PALO ALTO",
         .description = "Light Rain.",
-        .icon = WEATHER_APP_ICON_LIGHT_RAIN,
+        .icon = EVENT_TYPE_MINING,
         .current = 68,
         .end_time = 70,
         .start_time = 60,
@@ -107,7 +107,7 @@ static EventDataPoint s_data_points[] = {
     {
         .name = "LOS ANGELES",
         .description = "Clear throughout the day.",
-        .icon = WEATHER_APP_ICON_SUNNY_DAY,
+        .icon = EVENT_TYPE_MINING,
         .current = 100,
         .end_time = 100,
         .start_time = 80,
@@ -115,7 +115,7 @@ static EventDataPoint s_data_points[] = {
     {
         .name = "SAN FRANCISCO",
         .description = "Rain and Fog.",
-        .icon = WEATHER_APP_ICON_HEAVY_SNOW,
+        .icon = EVENT_TYPE_MINING,
         .current = 60,
         .end_time = 62,
         .start_time = 56,
@@ -123,7 +123,7 @@ static EventDataPoint s_data_points[] = {
     {
         .name = "SAN DIEGO",
         .description = "Surfboard :)",
-        .icon = WEATHER_APP_ICON_GENERIC_WEATHER,
+        .icon = EVENT_TYPE_MINING,
         .current = 110,
         .end_time = 120,
         .start_time = 9,

@@ -1,5 +1,6 @@
 .DS_Store
 *.pyc
+pebble_screenshot_*
 /.lock-*
 /build/
 /out/

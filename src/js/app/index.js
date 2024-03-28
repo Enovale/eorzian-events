@@ -1,5 +1,6 @@
 var Nodes = require('nodes');
 var Sights = require('sightseeing');
+var timeline = require('pebble-timeline-js');
 
 var monitoredEvents = [
   "Silkworm Cocoon",
@@ -11,22 +12,22 @@ var monitoredEvents = [
 var nodeData;
 var sightData;
 Nodes.fetchData(
-  function(data) {
+  function (data) {
     nodeData = data;
     console.log("Node Data Fetched");
 
     Sights.fetchData(
-      function(data) {
+      function (data) {
         sightData = data;
         console.log("Sightseeing data fetched");
         sendOverData();
       },
-      function(error) {
+      function (error) {
         console.log("Error!");
       }
     );
   },
-  function(error) {
+  function (error) {
     console.log("Error!");
   }
 );
@@ -47,16 +48,16 @@ function sendOverData() {
   console.log("Sending data now.");
 
   var monitoredData = [];
-  for(var j = 0; j < nodeData.length; j++) {
-    for(var l = 0; l < monitoredEvents.length; l++) {
+  for (var j = 0; j < nodeData.length; j++) {
+    for (var l = 0; l < monitoredEvents.length; l++) {
       if (nodeData[j].name == monitoredEvents[l]) {
         monitoredData[l] = nodeData[j];
       }
     }
   }
 
-  for(var j = 0; j < sightData.length; j++) {
-    for(var l = 0; l < monitoredEvents.length; l++) {
+  for (var j = 0; j < sightData.length; j++) {
+    for (var l = 0; l < monitoredEvents.length; l++) {
       if (sightData[j].name == monitoredEvents[l]) {
         monitoredData[l] = sightData[j];
       }
@@ -64,14 +65,14 @@ function sendOverData() {
   }
 
   var i = 0;
-  success = function() {
+  success = function () {
     i++;
     // TODO
     //if (i < nodeData.length) {
     if (i < 4) {
       sendOverEvent(monitoredData[i], i, success);
     } else {
-      Pebble.sendAppMessage({"DoneWithData": 1});
+      Pebble.sendAppMessage({ "DoneWithData": 1 });
     }
   }
   sendOverEvent(monitoredData[i], i, success);
@@ -89,15 +90,34 @@ function sendOverEvent(event, i, success, failure) {
     "EventType": typeToEnum(event.type)
   }
 
-  Pebble.sendAppMessage(dict, function() {
+  Pebble.sendAppMessage(dict, function () {
     console.log('Message sent successfully: ' + JSON.stringify(dict));
-    success(dict);
-  }, function(e) {
+    createPin(event, function (err) {
+      success(dict);
+    });
+  }, function (e) {
     console.log('Message failed: ' + JSON.stringify(e));
     failure(e);
   });
 }
 
-Pebble.addEventListener('appmessage', function(dict) {
+function createPin(event, callback) {
+  var startTime = new Date(new Date().getTime() + event.timeStart * 60 * 60);
+  var pin = {
+    "id": "pin-" + event.name.toLowerCase().replace(' ', '-'),
+    "time": startTime.toISOString(),
+    "layout": {
+      "type": "genericPin",
+      "title": "Example Pin",
+      "body": "This is an example pin from the timeline-push-pin example app!",
+      "tinyIcon": "system://images/SCHEDULED_EVENT"
+    }
+  };
+  console.log(JSON.stringify(pin));
+
+  timeline.insertUserPin(pin, callback);
+}
+
+Pebble.addEventListener('appmessage', function (dict) {
 
 });
