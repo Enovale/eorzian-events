@@ -1,5 +1,5 @@
-var Nodes = require('nodes');
-var Sights = require('sightseeing');
+var Nodes = require('./nodes');
+var Sights = require('./sightseeing');
 
 var monitoredEvents = [
   "Silkworm Cocoon",

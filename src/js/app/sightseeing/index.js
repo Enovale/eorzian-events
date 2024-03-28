@@ -1,8 +1,8 @@
 /* Mostly copied from https://tylian.net/sslog/ */
 Sights = module.exports;
 
-var ajax = require("ajax");
-var Settings = require("settings");
+var ajax = require("../../lib/ajax");
+var Settings = require("../../settings");
 var Util = require("../util");
 
 var jsonLength = Settings.option("lastSightJsonLength");

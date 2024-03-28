@@ -1,7 +1,7 @@
 var Nodes = module.exports;
 
-var ajax = require("ajax");
-var Settings = require("settings");
+var ajax = require("../../lib/ajax");
+var Settings = require("../../settings");
 var Util = require("../util");
 
 var currentFetchedNodeHash = Settings.option("lastNodeHash");

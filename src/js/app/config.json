@@ -1,0 +1,19 @@
+{
+    "type": "section",
+    "items": [
+      {
+        "type": "heading",
+        "defaultValue": "This is a section"
+      },
+      {
+        "type": "input",
+        "messageKey": "clockDataUrl",
+        "label": "FFXIVClock Data URL"
+      },
+      {
+        "type": "input",
+        "messageKey": "sightseeingDataUrl",
+        "label": "Sightseeing Log Helper URL"
+      }
+    ]
+  }

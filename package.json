@@ -2,7 +2,8 @@
   "author": "Pebble Technology",
   "dependencies": {
     "@smallstoneapps/loading-screen": "^2.2.1",
-    "pebble-api": "^0.2.2"
+    "pebble-api": "^0.2.2",
+    "pebble-clay": "^1.0.4"
   },
   "keywords": [
     "pebble-app"
@@ -11,7 +12,7 @@
   "pebble": {
     "capabilities": [],
     "displayName": "Cards Example",
-    "enableMultiJS": false,
+    "enableMultiJS": true,
     "messageKeys": {
       "DoneWithData": 1,
       "EventDescription": 5,
