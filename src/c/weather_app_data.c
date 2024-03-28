@@ -3,44 +3,53 @@
  */
 
 #include <pebble.h>
+#include <math.h>
 #include "weather_app_data.h"
 #include "weather_app_resources.h"
 
-void weather_app_main_window_view_model_announce_changed(WeatherAppMainWindowViewModel *model) {
+void weather_app_main_window_view_model_announce_changed(EventsCardsMainWindowViewModel *model) {
   if (model->announce_changed) {
-    model->announce_changed((struct WeatherAppMainWindowViewModel *)model);
+    model->announce_changed((struct EventsCardsMainWindowViewModel *)model);
   }
 }
 
-void weather_app_view_model_set_highlow(WeatherAppMainWindowViewModel *model, int16_t high, int16_t low) {
-  model->highlow.high = high;
-  model->highlow.low = low;
-  snprintf(model->highlow.text, sizeof(model->highlow.text), "HI %d°, LO %d°", model->highlow.high, model->highlow.low);
+void weather_app_view_model_set_highlow(EventsCardsMainWindowViewModel *model, uint8_t end_hours, uint8_t end_minutes, uint8_t start_hours, uint8_t start_minutes) {
+  model->startend.end_hours = end_hours;
+  model->startend.end_minutes = end_minutes;
+  model->startend.start_hours = start_hours;
+  model->startend.start_minutes = start_minutes;
+  snprintf(model->startend.text, sizeof(model->startend.text), "%d:%.2d - %d:%.2d", model->startend.start_hours, model->startend.start_minutes, model->startend.end_hours, model->startend.end_minutes);
 }
 
-void weather_app_view_model_set_temperature(WeatherAppMainWindowViewModel *model, int16_t value) {
-  model->temperature.value = value;
-  snprintf(model->temperature.text, sizeof(model->temperature.text), "%d°", model->temperature.value);
+void weather_app_view_model_set_temperature(EventsCardsMainWindowViewModel *model, int32_t value) {
+  model->active.value = value;
+  snprintf(model->active.text, sizeof(model->active.text), "%d°", model->active.value);
 }
 
-void weather_app_view_model_set_icon(WeatherAppMainWindowViewModel *model, GDrawCommandImage *image) {
+void weather_app_view_model_set_icon(EventsCardsMainWindowViewModel *model, GDrawCommandImage *image) {
   free(model->icon.draw_command);
   model->icon.draw_command = image;
   weather_app_main_window_view_model_announce_changed(model);
 }
 
-WeatherDataViewNumbers weather_app_data_point_view_model_numbers(EventDataPoint *data_point) {
-  return (WeatherDataViewNumbers){
-      .temperature = data_point->current,
-      .high = data_point->high,
-      .low = data_point->low,
+EventsDataViewNumbers weather_app_data_point_view_model_numbers(EventDataPoint *data_point) {
+  double end_hours;
+  uint8_t end_minutes = modf((double)data_point->end_time / 60 / 60, &end_hours) * 60;
+  double start_hours;
+  uint8_t start_minutes = modf((double)data_point->start_time / 60 / 60, &start_hours) * 60;
+  return (EventsDataViewNumbers){
+      .active = data_point->current,
+      .end_hours = end_hours,
+      .end_minutes = end_minutes,
+      .start_hours = start_hours,
+      .start_minutes = start_minutes,
   };
 }
 
 int weather_app_index_of_data_point(EventDataPoint *dp);
 
-void weather_app_view_model_fill_strings_and_pagination(WeatherAppMainWindowViewModel *view_model, EventDataPoint *data_point) {
-  view_model->city = data_point->name;
+void weather_app_view_model_fill_strings_and_pagination(EventsCardsMainWindowViewModel *view_model, EventDataPoint *data_point) {
+  view_model->name = data_point->name;
   view_model->description = data_point->description;
 
   view_model->pagination.idx = (int16_t)(1 + weather_app_index_of_data_point(data_point));
@@ -55,12 +64,12 @@ GDrawCommandImage *weather_app_data_point_create_icon(EventDataPoint *data_point
 }
 
 
-void weather_view_model_fill_numbers(WeatherAppMainWindowViewModel *model, WeatherDataViewNumbers numbers) {
-  weather_app_view_model_set_temperature(model, numbers.temperature);
-  weather_app_view_model_set_highlow(model, numbers.high, numbers.low);
+void weather_view_model_fill_numbers(EventsCardsMainWindowViewModel *model, EventsDataViewNumbers numbers) {
+  weather_app_view_model_set_temperature(model, numbers.active);
+  weather_app_view_model_set_highlow(model, numbers.end_hours, numbers.end_minutes, numbers.start_hours, numbers.start_minutes);
 }
 
-void weather_app_view_model_fill_colors(WeatherAppMainWindowViewModel *model, GColor color) {
+void weather_app_view_model_fill_colors(EventsCardsMainWindowViewModel *model, GColor color) {
   model->bg_color.top = color;
   model->bg_color.bottom = color;
   weather_app_main_window_view_model_announce_changed(model);
@@ -70,8 +79,8 @@ GColor weather_app_data_point_color(EventDataPoint *data_point) {
   return data_point->current > 90 ? GColorOrange : GColorPictonBlue;
 }
 
-void weather_app_view_model_fill_all(WeatherAppMainWindowViewModel *model, EventDataPoint *data_point) {
-  WeatherAppMainWindowViewModelFunc annouce_changed = model->announce_changed;
+void weather_app_view_model_fill_all(EventsCardsMainWindowViewModel *model, EventDataPoint *data_point) {
+  EventsCardsMainWindowViewModelFunc annouce_changed = model->announce_changed;
   memset(model, 0, sizeof(*model));
   model->announce_changed = annouce_changed;
   weather_app_view_model_fill_strings_and_pagination(model, data_point);
@@ -82,7 +91,7 @@ void weather_app_view_model_fill_all(WeatherAppMainWindowViewModel *model, Event
   weather_app_main_window_view_model_announce_changed(model);
 }
 
-void weather_app_view_model_deinit(WeatherAppMainWindowViewModel *model) {
+void weather_app_view_model_deinit(EventsCardsMainWindowViewModel *model) {
   weather_app_view_model_set_icon(model, NULL);
 }
 
@@ -92,32 +101,32 @@ static EventDataPoint s_data_points[] = {
         .description = "Light Rain.",
         .icon = WEATHER_APP_ICON_LIGHT_RAIN,
         .current = 68,
-        .high = 70,
-        .low = 60,
+        .end_time = 70,
+        .start_time = 60,
     },
     {
         .name = "LOS ANGELES",
         .description = "Clear throughout the day.",
         .icon = WEATHER_APP_ICON_SUNNY_DAY,
         .current = 100,
-        .high = 100,
-        .low = 80,
+        .end_time = 100,
+        .start_time = 80,
     },
     {
         .name = "SAN FRANCISCO",
         .description = "Rain and Fog.",
         .icon = WEATHER_APP_ICON_HEAVY_SNOW,
         .current = 60,
-        .high = 62,
-        .low = 56,
+        .end_time = 62,
+        .start_time = 56,
     },
     {
         .name = "SAN DIEGO",
         .description = "Surfboard :)",
         .icon = WEATHER_APP_ICON_GENERIC_WEATHER,
         .current = 110,
-        .high = 120,
-        .low = 9,
+        .end_time = 120,
+        .start_time = 9,
     },
 };
 

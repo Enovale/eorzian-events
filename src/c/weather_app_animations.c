@@ -6,34 +6,38 @@
 #include "weather_app_animations.h"
 #include "weather_app_private.h"
 
-typedef void (*WeatherDataAnimatedNumbersSetter)(WeatherAppData *data, WeatherDataViewNumbers numbers);
+typedef void (*WeatherDataAnimatedNumbersSetter)(EventsAppData *data, EventsDataViewNumbers numbers);
 
-static WeatherDataViewNumbers get_animated_numbers(WeatherAppMainWindowViewModel *model) {
-  return (WeatherDataViewNumbers) {
-    .temperature = model->temperature.value,
-    .low = model->highlow.low,
-    .high = model->highlow.high,
+static EventsDataViewNumbers get_animated_numbers(EventsCardsMainWindowViewModel *model) {
+  return (EventsDataViewNumbers) {
+    .active = model->active.value,
+    .start_hours = model->startend.start_hours,
+    .start_minutes = model->startend.start_minutes,
+    .end_hours = model->startend.end_hours,
+    .end_minutes = model->startend.end_minutes,
   };
 }
 
-static void set_animated_numbers(WeatherAppMainWindowViewModel *model, WeatherDataViewNumbers numbers) {
+static void set_animated_numbers(EventsCardsMainWindowViewModel *model, EventsDataViewNumbers numbers) {
   weather_view_model_fill_numbers(model, numbers);
   weather_app_main_window_view_model_announce_changed(model);
 }
 
-static inline int16_t distance_interpolate(const int32_t normalized, int16_t from, int16_t to) {
+static inline int32_t distance_interpolate(const int32_t normalized, uint8_t from, uint8_t to) {
   return from + ((normalized * (to - from)) / ANIMATION_NORMALIZED_MAX);
 }
 
 void property_animation_update_animated_numbers(PropertyAnimation *property_animation, const uint32_t distance_normalized) {
-  WeatherDataViewNumbers from, to;
+  EventsDataViewNumbers from, to;
   property_animation_from(property_animation, &from, sizeof(from), false);
   property_animation_to(property_animation, &to, sizeof(to), false);
 
-  WeatherDataViewNumbers current = (WeatherDataViewNumbers) {
-    .temperature = distance_interpolate(distance_normalized, from.temperature, to.temperature),
-    .high = distance_interpolate(distance_normalized, from.high, to.high),
-    .low = distance_interpolate(distance_normalized, from.low, to.low),
+  EventsDataViewNumbers current = (EventsDataViewNumbers) {
+    .active = distance_interpolate(distance_normalized, from.active, to.active),
+    .end_hours = distance_interpolate(distance_normalized, from.end_hours, to.end_hours),
+    .end_minutes = distance_interpolate(distance_normalized, from.end_minutes, to.end_minutes),
+    .start_hours = distance_interpolate(distance_normalized, from.start_hours, to.start_hours),
+    .start_minutes = distance_interpolate(distance_normalized, from.start_minutes, to.start_minutes),
   };
   PropertyAnimationImplementation *impl = (PropertyAnimationImplementation *) animation_get_implementation((Animation *) property_animation);
   WeatherDataAnimatedNumbersSetter setter = (WeatherDataAnimatedNumbersSetter)impl->accessors.setter.grect;
@@ -55,9 +59,9 @@ static const PropertyAnimationImplementation s_animated_numbers_implementation =
 };
 
 
-Animation *weather_app_create_view_model_animation_numbers(WeatherAppMainWindowViewModel *view_model, EventDataPoint *next_data_point) {
+Animation *weather_app_create_view_model_animation_numbers(EventsCardsMainWindowViewModel *view_model, EventDataPoint *next_data_point) {
   PropertyAnimation *number_animation = property_animation_create(&s_animated_numbers_implementation, view_model, NULL, NULL);
-  WeatherDataViewNumbers numbers = get_animated_numbers(view_model);
+  EventsDataViewNumbers numbers = get_animated_numbers(view_model);
   property_animation_from(number_animation, &numbers, sizeof(numbers), true);
   numbers = weather_app_data_point_view_model_numbers(next_data_point);
   property_animation_to(number_animation, &numbers, sizeof(numbers), true);
@@ -66,14 +70,14 @@ Animation *weather_app_create_view_model_animation_numbers(WeatherAppMainWindowV
 
 // --------------------------
 
-WeatherAppMainWindowViewModel *view_model_from_animation(Animation *animation) {
+EventsCardsMainWindowViewModel *view_model_from_animation(Animation *animation) {
   void *subject = NULL;
   property_animation_get_subject((PropertyAnimation *) animation, &subject);
   return subject;
 }
 
 static void update_bg_color_normalized(Animation *animation, const uint32_t distance_normalized) {
-  WeatherAppMainWindowViewModel *view_model = view_model_from_animation(animation);
+  EventsCardsMainWindowViewModel *view_model = view_model_from_animation(animation);
 
   view_model->bg_color.to_bottom_normalized = distance_normalized;
   weather_app_main_window_view_model_announce_changed(view_model);
@@ -86,7 +90,7 @@ static const PropertyAnimationImplementation s_bg_color_normalized_implementatio
 };
 
 static void bg_colors_animation_started(Animation *animation, void *context) {
-  WeatherAppMainWindowViewModel *view_model = view_model_from_animation(animation);
+  EventsCardsMainWindowViewModel *view_model = view_model_from_animation(animation);
 
   EventDataPoint *dp = context;
   GColor color = weather_app_data_point_color(dp);
@@ -102,7 +106,7 @@ static void bg_colors_animation_started(Animation *animation, void *context) {
 }
 
 static void bg_colors_animation_stopped(Animation *animation, bool finished, void *context) {
-  WeatherAppMainWindowViewModel *view_model = view_model_from_animation(animation);
+  EventsCardsMainWindowViewModel *view_model = view_model_from_animation(animation);
 
   EventDataPoint *dp = context;
   GColor color = weather_app_data_point_color(dp);
@@ -110,7 +114,7 @@ static void bg_colors_animation_stopped(Animation *animation, bool finished, voi
   weather_app_view_model_fill_colors(view_model, color);
 }
 
-Animation *weather_app_create_view_model_animation_bgcolor(WeatherAppMainWindowViewModel *view_model, EventDataPoint *next_data_point) {
+Animation *weather_app_create_view_model_animation_bgcolor(EventsCardsMainWindowViewModel *view_model, EventDataPoint *next_data_point) {
   Animation *bg_animation = (Animation *) property_animation_create(&s_bg_color_normalized_implementation, view_model, NULL, NULL);
   animation_set_handlers(bg_animation, (AnimationHandlers){
     .started = bg_colors_animation_started,
@@ -122,7 +126,7 @@ Animation *weather_app_create_view_model_animation_bgcolor(WeatherAppMainWindowV
 // -------------------------
 
 static void update_icon_square_normalized(Animation *animation, const uint32_t distance_normalized) {
-  WeatherAppMainWindowViewModel *view_model = view_model_from_animation(animation);
+  EventsCardsMainWindowViewModel *view_model = view_model_from_animation(animation);
 
   view_model->icon.to_square_normalized = distance_normalized;
   weather_app_main_window_view_model_announce_changed(view_model);
@@ -135,12 +139,12 @@ static const PropertyAnimationImplementation s_icon_scquare_normalized_implement
 };
 
 static void replace_icon_stop_handler(Animation *animation, bool finished, void *context) {
-  WeatherAppMainWindowViewModel *view_model = view_model_from_animation(animation);
+  EventsCardsMainWindowViewModel *view_model = view_model_from_animation(animation);
   GDrawCommandImage *icon = context;
   weather_app_view_model_set_icon(view_model, icon);
 }
 
-Animation *weather_app_create_view_model_animation_icon(WeatherAppMainWindowViewModel *view_model, EventDataPoint *next_data_point, uint32_t duration) {
+Animation *weather_app_create_view_model_animation_icon(EventsCardsMainWindowViewModel *view_model, EventDataPoint *next_data_point, uint32_t duration) {
   Animation *icon_animation_to_square = (Animation *) property_animation_create(&s_icon_scquare_normalized_implementation, view_model, NULL, NULL);
   animation_set_duration(icon_animation_to_square, duration / 2);
   animation_set_curve(icon_animation_to_square, AnimationCurveEaseIn);

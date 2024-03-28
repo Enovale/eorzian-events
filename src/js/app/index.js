@@ -3,7 +3,7 @@ var Sights = require('sightseeing');
 
 var monitoredEvents = [
   "Silkworm Cocoon",
-  "Silver Sovereign",
+  "Caiman",
   "Darksteel Ore",
   "Barracuda Piers"
 ]
@@ -84,6 +84,8 @@ function sendOverEvent(event, i, success, failure) {
     "EventIndex": i,
     "EventLocation": event.location,
     "EventDescription": event.description,
+    "EventTimeStart": event.timeStart * 60 * 60,
+    "EventTimeEnd": event.timeEnd * 60 * 60,
     "EventType": typeToEnum(event.type)
   }
 
