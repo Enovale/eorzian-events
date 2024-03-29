@@ -9,6 +9,9 @@ var monitoredEvents = [
   "Barracuda Piers"
 ]
 
+var today = new Date();
+today.setUTCHours(0,0,0,0);
+
 var nodeData;
 var sightData;
 Nodes.fetchData(
@@ -92,9 +95,8 @@ function sendOverEvent(event, i, success, failure) {
 
   Pebble.sendAppMessage(dict, function () {
     console.log('Message sent successfully: ' + JSON.stringify(dict));
-    createPin(event, function (err) {
-      success(dict);
-    });
+    createPin(event, function() {});
+    success(dict);
   }, function (e) {
     console.log('Message failed: ' + JSON.stringify(e));
     failure(e);
@@ -102,14 +104,16 @@ function sendOverEvent(event, i, success, failure) {
 }
 
 function createPin(event, callback) {
-  var startTime = new Date(new Date().getTime() + event.timeStart * 60 * 60);
+  var startTime = Util.getNextActive(event);
   var pin = {
     "id": "pin-" + event.name.toLowerCase().replace(' ', '-'),
     "time": startTime.toISOString(),
+    "duration": (event.timeEnd - event.timeStart) * 60,
     "layout": {
-      "type": "genericPin",
-      "title": "Example Pin",
-      "body": "This is an example pin from the timeline-push-pin example app!",
+      "type": "calendarPin",
+      "title": event.name,
+      "body": event.description,
+      "locationName": event.location,
       "tinyIcon": "system://images/SCHEDULED_EVENT"
     }
   };
