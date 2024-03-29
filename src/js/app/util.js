@@ -102,15 +102,6 @@ Util.getNextActiveEnd = function (item) {
   return now;
 }
 
-/*
-class Time {
-  constructor(hours, minutes) {
-    this.hours = hours;
-    this.minutes = minutes;
-  }
-}
-*/
-
 Util.TimedEvent = function(name, location, description, image, timeStart, timeEnd, type, weather, weatherRates) {
   this.name = name;
   this.location = location;
@@ -121,4 +112,8 @@ Util.TimedEvent = function(name, location, description, image, timeStart, timeEn
   this.type = type;
   this.weather = weather;
   this.weatherRates = weatherRates;
+}
+
+Util.TimedEvent.prototype.timeStartEarthTime = function() {
+
 }

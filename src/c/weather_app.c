@@ -142,7 +142,11 @@ static void main_window_load(Window *window) {
   layer_add_child(window_layer, data->icon_layer);
 
   init_statusbar_text_layer(window_layer, &data->fake_statusbar);
-  text_layer_set_text(data->fake_statusbar, "9:41 AM");
+  time_t now = time(NULL);
+  struct tm *t = localtime(&now);
+  char* time_str = (char*)malloc(18);
+  strftime(time_str, sizeof(time_str), "%R", t);
+  text_layer_set_text(data->fake_statusbar, time_str);
 
   init_statusbar_text_layer(window_layer, &data->pagination_layer);
   text_layer_set_text_alignment(data->pagination_layer, GTextAlignmentRight);
@@ -283,6 +287,10 @@ static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 }
 
+static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
+  layer_mark_dirty(window_get_root_layer(s_main_window));
+}
+
 static void show_weather_window() {
   loading_screen_hide();
 
@@ -301,6 +309,8 @@ static void show_weather_window() {
   });
 
   window_stack_push(s_main_window, true);
+
+  tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 }
 
 static void inbox_received_handler(DictionaryIterator *iter, void *context) {
@@ -365,6 +375,8 @@ static void init() {
 
 static void deinit() {
   window_destroy(s_main_window);
+  app_message_deregister_callbacks();
+  tick_timer_service_unsubscribe();
 }
 
 int main(void) {
