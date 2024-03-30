@@ -42,9 +42,32 @@
           "type": "raw"
         },
         {
-          "file": "sightseeing.pdc",
-          "name": "ICON_SIGHTSEEING",
+          "file": "sightseeing_tiny.pdc",
+          "name": "ICON_SIGHTSEEING_TINY",
           "type": "raw"
+        },
+        {
+          "file": "sightseeing_small.pdc",
+          "name": "ICON_SIGHTSEEING_SMALL",
+          "type": "raw",
+          "menuicon": "true"
+        },
+        {
+          "file": "sightseeing_large.pdc",
+          "name": "ICON_SIGHTSEEING_LARGE",
+          "type": "raw"
+        }
+      ],
+      "publishedMedia": [
+        {
+          "name": "ICON_SIGHTSEEING",
+          "id": 4,
+          "glance": "ICON_SIGHTSEEING_TINY",
+          "timeline": {
+            "tiny": "ICON_SIGHTSEEING_TINY",
+            "small": "ICON_SIGHTSEEING_SMALL",
+            "large": "ICON_SIGHTSEEING_LARGE"
+          }
         }
       ]
     },

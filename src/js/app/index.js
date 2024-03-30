@@ -103,8 +103,17 @@ function sendOverEvent(event, i, success, failure) {
   });
 }
 
+function pad(num, size) {
+  num = num.toString();
+  while (num.length < size) num = "0" + num;
+  return num;
+}
+
 function createPin(event, callback) {
   var startTime = Util.getNextActive(event);
+  var endTime = Util.getNextActiveEnd(event);
+  var eorziaStartTime = Util.getEorzeaTime(startTime);
+  var eorziaEndTime = Util.getEorzeaTime(endTime);
   var pin = {
     "id": "pin-" + event.name.toLowerCase().replace(' ', '-'),
     "time": startTime.toISOString(),
@@ -114,12 +123,22 @@ function createPin(event, callback) {
       "title": event.name,
       "body": event.description,
       "locationName": event.location,
-      "tinyIcon": "system://images/SCHEDULED_EVENT"
+      "shortSubtitle": formatTime(eorziaStartTime) + "-" + formatTime(eorziaEndTime),
+      //"tinyIcon": "app://images/ICON_" + event.type.toUpperCase()
+      "tinyIcon": "app://images/ICON_SIGHTSEEING"
+      //"tinyIcon": "system://images/SCHEDULED_EVENT"
     }
   };
   console.log(JSON.stringify(pin));
 
   timeline.insertUserPin(pin, callback);
+}
+
+function formatTime(date) {
+  var hours = date.getUTCHours();
+  var realHours = hours > 12 ? hours - 12 : hours;
+  var dayPart = hours >= 12 ? "PM" : "AM";
+  return realHours + ":" + pad(date.getUTCMinutes(), 2) + dayPart;
 }
 
 Pebble.addEventListener('appmessage', function (dict) {

@@ -18,6 +18,6 @@ GDrawCommandImage *weather_app_resources_get_icon(WeatherAppIcon icon) {
 
     default:
     case EVENT_TYPE_SIGHTSEEING:
-      return gdraw_command_image_create_with_resource(RESOURCE_ID_ICON_SIGHTSEEING);
+      return gdraw_command_image_create_with_resource(RESOURCE_ID_ICON_SIGHTSEEING_SMALL);
   }
 }
