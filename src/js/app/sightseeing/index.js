@@ -26,7 +26,7 @@ Sights.fetchData = function(success, failure) {
                 var json = JSON.parse(jsonStr);
                 for(var i = 0; i < json.length; i++) {
                     var item = json[i];
-                    parsedData.push(new Util.TimedEvent(item.name, item.location, item.description, null, item.time[0], item.time[1], "sightseeing", item.weather, item.weatherRate));
+                    parsedData.push(new Util.TimedEvent(item.name.toLowerCase().replace(' ', '-'), item.name, item.location, item.description, null, item.time[0], item.time[1], "sightseeing", item.weather, item.weatherRate));
                 }
                 Settings.option("parsedSights", parsedData);
             }

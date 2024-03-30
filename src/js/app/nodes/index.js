@@ -42,7 +42,7 @@ Nodes.fetchData = function(success, failure) {
                                         var startTime = parseInt(startSplit[0]) + parseInt(startSplit[1]) / 60;
                                         var endSplit = node.endTime.split(':');
                                         var endTime = parseInt(endSplit[0]) + parseInt(endSplit[1]) / 60;
-                                        parsedData.push(new Util.TimedEvent(item.name, node.zone, item.description, "https://www.ffxivclock.com/items/" + item.imageUrl, startTime, endTime, node.type, [], []));
+                                        parsedData.push(new Util.TimedEvent(item.id, item.name, node.zone, item.description, "https://www.ffxivclock.com/items/" + item.imageUrl, startTime, endTime, node.type, [], []));
                                     }
                                 }
 

@@ -8,7 +8,7 @@
 GDrawCommandImage *weather_app_resources_get_icon(WeatherAppIcon icon) {
   switch (icon) {
     case EVENT_TYPE_MINING:
-      return gdraw_command_image_create_with_resource(RESOURCE_ID_ICON_MINING);
+      return gdraw_command_image_create_with_resource(RESOURCE_ID_ICON_MINING_SMALL);
 
     case EVENT_TYPE_BOTANY:
       return gdraw_command_image_create_with_resource(RESOURCE_ID_ICON_BOTANY);

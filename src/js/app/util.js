@@ -102,7 +102,8 @@ Util.getNextActiveEnd = function (item) {
   return now;
 }
 
-Util.TimedEvent = function(name, location, description, image, timeStart, timeEnd, type, weather, weatherRates) {
+Util.TimedEvent = function(id, name, location, description, image, timeStart, timeEnd, type, weather, weatherRates) {
+  this.id = id;
   this.name = name;
   this.location = location;
   this.description = description;

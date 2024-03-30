@@ -115,7 +115,7 @@ function createPin(event, callback) {
   var eorziaStartTime = Util.getEorzeaTime(startTime);
   var eorziaEndTime = Util.getEorzeaTime(endTime);
   var pin = {
-    "id": "pin-" + event.name.toLowerCase().replace(' ', '-'),
+    "id": "pin-" + event.id,
     "time": startTime.toISOString(),
     "duration": (event.timeEnd - event.timeStart) * 60,
     "layout": {
@@ -124,9 +124,7 @@ function createPin(event, callback) {
       "body": event.description,
       "locationName": event.location,
       "shortSubtitle": formatTime(eorziaStartTime) + "-" + formatTime(eorziaEndTime),
-      //"tinyIcon": "app://images/ICON_" + event.type.toUpperCase()
-      "tinyIcon": "app://images/ICON_SIGHTSEEING"
-      //"tinyIcon": "system://images/SCHEDULED_EVENT"
+      "tinyIcon": "app://images/ICON_" + event.type.toUpperCase()
     }
   };
   console.log(JSON.stringify(pin));

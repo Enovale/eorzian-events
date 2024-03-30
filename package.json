@@ -27,8 +27,18 @@
     "resources": {
       "media": [
         {
-          "file": "mining.pdc",
-          "name": "ICON_MINING",
+          "file": "mining_tiny.pdc",
+          "name": "ICON_MINING_TINY",
+          "type": "raw"
+        },
+        {
+          "file": "mining_small.pdc",
+          "name": "ICON_MINING_SMALL",
+          "type": "raw"
+        },
+        {
+          "file": "mining_large.pdc",
+          "name": "ICON_MINING_LARGE",
           "type": "raw"
         },
         {
@@ -59,6 +69,16 @@
         }
       ],
       "publishedMedia": [
+        {
+          "name": "ICON_MINING",
+          "id": 1,
+          "glance": "ICON_MINING_TINY",
+          "timeline": {
+            "tiny": "ICON_MINING_TINY",
+            "small": "ICON_MINING_SMALL",
+            "large": "ICON_MINING_LARGE"
+          }
+        },
         {
           "name": "ICON_SIGHTSEEING",
           "id": 4,
